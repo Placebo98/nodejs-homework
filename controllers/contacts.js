@@ -1,10 +1,11 @@
 const { schema } = require("../schema/joiSchema");
-const contacts = require("../models/contacts");
+// const contacts = require("../models/contacts");
 const { HttpError } = require("../helpers");
+const { Contact } = require("../models/contacts.mongoose");
 
 const getAll = async (req, res, next) => {
   try {
-    const result = await contacts.listContacts();
+    const result = await Contact.find();
     res.json(result);
   } catch (error) {
     next(error);
@@ -14,7 +15,7 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contacts.getContactById(id);
+    const result = await Contact.findById(id);
     if (!result) {
       throw HttpError(404, "Not Found");
     }
@@ -31,7 +32,7 @@ const postOne = async (req, res, next) => {
     if (error) {
       throw HttpError(404, error.message);
     }
-    const result = await contacts.addContact(req.body);
+    const result = await Contact.create(req.body);
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -41,7 +42,7 @@ const postOne = async (req, res, next) => {
 const deleteOne = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contacts.removeContact(id);
+    const result = await Contact.findByIdAndDelete(id);
     if (!result) {
       throw HttpError(404, "Not Found");
     }
@@ -59,7 +60,7 @@ const putOne = async (req, res, next) => {
       throw HttpError(404, error.message);
     }
     const { id } = req.params;
-    const result = await contacts.updateContact(id, req.body);
+    const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
     if (!result) {
       throw HttpError(404, "Not Found");
     }
@@ -68,4 +69,5 @@ const putOne = async (req, res, next) => {
     next(error);
   }
 };
-module.exports = { getAll, getById, postOne, deleteOne, putOne };
+
+module.exports = { getAll, postOne, getById, putOne, deleteOne };
