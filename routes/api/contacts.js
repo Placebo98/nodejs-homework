@@ -12,4 +12,6 @@ router.delete("/:id", ctrl.deleteOne);
 
 router.put("/:id", ctrl.putOne);
 
+// router.patch("/:id/favorite", ctrl.putOne);
+
 module.exports = router;
