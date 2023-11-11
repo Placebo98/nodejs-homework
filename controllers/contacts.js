@@ -1,5 +1,4 @@
-const { schema } = require("../schema/joiSchema");
-// const contacts = require("../models/contacts");
+const { schema, updateFavoriteSchema } = require("../schema/joiSchema");
 const { HttpError } = require("../helpers");
 const { Contact } = require("../models/contacts.mongoose");
 
@@ -70,4 +69,29 @@ const putOne = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, postOne, getById, putOne, deleteOne };
+const updateStatusContact = async (req, res, next) => {
+  try {
+    const { error } = updateFavoriteSchema.validate(req.body);
+    console.log(error);
+    if (error) {
+      throw HttpError(404, error.message);
+    }
+    const { id } = req.params;
+    const result = await Contact.findByIdAndUpdate(id, req.body, { new: true });
+    if (!result) {
+      throw HttpError(404, "Not Found");
+    }
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  getAll,
+  postOne,
+  getById,
+  putOne,
+  deleteOne,
+  updateStatusContact,
+};
