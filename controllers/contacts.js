@@ -4,7 +4,8 @@ const { Contact } = require("../models/contacts.mongoose");
 
 const getAll = async (req, res, next) => {
   try {
-    const result = await Contact.find();
+    const { _id: owner } = req.user;
+    const result = await Contact.find({ owner });
     res.json(result);
   } catch (error) {
     next(error);
@@ -31,7 +32,8 @@ const postOne = async (req, res, next) => {
     if (error) {
       throw HttpError(404, error.message);
     }
-    const result = await Contact.create(req.body);
+    const { _id: owner } = req.user;
+    const result = await Contact.create({ ...req.body, owner });
     res.status(201).json(result);
   } catch (error) {
     next(error);

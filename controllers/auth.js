@@ -3,14 +3,16 @@ const jwt = require("jsonwebtoken");
 const { registerSchema, loginSchema } = require("../schema/joiSchema");
 const { HttpError } = require("../helpers");
 const { User } = require("../models/user.mongoose");
-const { required } = require("joi");
+
+// require("dotenv");
+
+// const { SECRET_KEY } = process.env;
 
 const register = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
-
     if (user) {
       throw HttpError(409, "Email in use");
     }
@@ -21,7 +23,6 @@ const register = async (req, res, next) => {
 
     res.status(201).json({
       email: newUser.email,
-      password: newUser.password,
       subscription: newUser.subscription,
     });
   } catch (error) {
@@ -42,9 +43,22 @@ const login = async (req, res, next) => {
       throw HttpError(401, "Email or password is wrong");
     }
 
-    const token = "";
+    const payload = {
+      id: user._id,
+    };
 
-    res.json({ token });
+    const token = jwt.sign(payload, process.env.SECRET_KEY, {
+      expiresIn: "23h",
+    });
+    await User.findByIdAndUpdate(user._id, { token }).exec();
+
+    res.status(200).send({
+      token,
+      user: {
+        email: user.email,
+        subscription: user.subscription,
+      },
+    });
   } catch (error) {
     next(error);
   }
