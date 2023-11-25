@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const { handleMongooseError } = require("../helpers");
+const { string } = require("joi");
 
 const userSchema = new Schema(
   {
@@ -18,6 +19,10 @@ const userSchema = new Schema(
       default: "starter",
     },
     token: String,
+    avatarUrl: {
+      type: String,
+      required: true,
+    },
   },
   { versionKey: false, timestamps: true }
 );
