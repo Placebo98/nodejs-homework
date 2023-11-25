@@ -19,7 +19,7 @@ const userSchema = new Schema(
       default: "starter",
     },
     token: String,
-    avatarUrl: {
+    avatarURL: {
       type: String,
       required: true,
     },
