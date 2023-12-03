@@ -1,4 +1,3 @@
-require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 const transport = nodemailer.createTransport({
@@ -10,19 +9,17 @@ const transport = nodemailer.createTransport({
   },
 });
 
-const message = {
-  to: "oleg.tsaryk98@gmail.com",
-  from: "oleg.tsaryk98@gmail.com",
-  subject: "Test email",
-  html: "<h1>Test email from Oleg </h1>",
-  text: "Test email from Oleg",
-};
+// const message = {
+//   to: "oleg.tsaryk98@gmail.com",
+//   from: "oleg.tsaryk98@gmail.com",
+//   subject: "Test email",
+//   html: "<h1>Test email from Oleg </h1>",
+//   text: "Test email from Oleg",
+// };
 
-transport
-  .sendMail(message)
-  .then((response) => {
-    console.log(response);
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+function sendEmail(message) {
+  message.from = "oleg.tsaryk98@gmail.com";
+  return transport.sendMail(message);
+}
+
+module.exports = sendEmail;

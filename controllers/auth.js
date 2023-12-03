@@ -4,8 +4,10 @@ const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs/promises");
 const { registerSchema, loginSchema } = require("../schema/joiSchema");
-const { HttpError } = require("../helpers");
+const { HttpError, sendEmail } = require("../helpers");
 const { User } = require("../models/user.mongoose");
+const { nanoid } = require("nanoid");
+// const { BASE_URL } = process.env;
 
 const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
@@ -20,12 +22,23 @@ const register = async (req, res, next) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
     const avatarUrl = gravatar.url(email);
+    const verificationToken = nanoid();
 
     const newUser = await User.create({
       ...req.body,
       password: hashPassword,
+      verificationToken,
       avatarUrl,
     });
+
+    const verifyEmail = {
+      to: email,
+      subject: "Verify email",
+      html: `<h1>Verify your email</h1> <a target="_blank" href="${process.env.BASE_URL}/users/verify/${verificationToken}">Click here to verify</a>`,
+      text: `<h1>Verify your email</h1> <a target="_blank" href="${process.env.BASE_URL}/users/verify/${verificationToken}">Click here to verify</a>`,
+    };
+
+    await sendEmail(verifyEmail);
 
     res.status(201).json({
       email: newUser.email,
