@@ -19,6 +19,12 @@ const registerSchema = Joi.object({
   subscription: Joi.string().default("starter"),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .required(),
+});
+
 const loginSchema = Joi.object({
   password: Joi.string().required(),
   email: Joi.string()
@@ -27,4 +33,10 @@ const loginSchema = Joi.object({
   subscription: Joi.string().default("starter"),
 });
 
-module.exports = { schema, updateFavoriteSchema, registerSchema, loginSchema };
+module.exports = {
+  schema,
+  updateFavoriteSchema,
+  registerSchema,
+  loginSchema,
+  emailSchema,
+};
